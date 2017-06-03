@@ -1,0 +1,16 @@
+{
+  "name": "hypo-tests",
+  "version": "1.0.0",
+  "description": "Application for Hypotheses Testing",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jürgen Ratzenböck",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.4.1",
+    "mongodb": "^2.2.28"
+  }
+}
