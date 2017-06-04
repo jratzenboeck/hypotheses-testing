@@ -7,7 +7,6 @@ function createConnection(database, cb) {
         if (err) {
             throw err;
         }
-        console.log('connected to db');
         cb(null, db);
     });
 }
