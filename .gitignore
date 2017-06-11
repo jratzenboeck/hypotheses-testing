@@ -65,5 +65,7 @@ typings/
 .idea/
 .DS_Store
 
+data/
+
 
 # End of https://www.gitignore.io/api/node
