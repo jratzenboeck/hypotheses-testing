@@ -16,7 +16,7 @@ function getServerCommandMetricsForUsers(commands, cmdStatistic, startDate, endD
         async.waterfall([
             async.apply(db.createConnection, 'tractivedb_metrics'),
             async.apply(queryServerCommandMetricsForUsers, commands, cmdStatistic,
-                        util.getObjectIdsAsStringArray(result.userIds), startDate, endDate, sampleSize)
+                        util.getObjectIdsAsStringArray(result.userIds, '_id'), startDate, endDate, sampleSize)
         ], function (err, result) {
             cb(err, result);
         });
@@ -27,6 +27,7 @@ function queryServerCommandMetricsForUsers(commands, cmdStatistic, userIds, star
     var matchCriteria = {};
     matchCriteria[cmdStatistic] = {'$exists': true};
     matchCriteria['msg_name'] = {$in: commands};
+    matchCriteria['mode_on'] = true;
     matchCriteria['requested_by'] = {$in: userIds};
     matchCriteria['requested_at'] = {'$gte': startDate, '$lt': endDate};
 

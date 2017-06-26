@@ -9,10 +9,10 @@ module.exports = {
     mergeArraysById: mergeArraysById
 };
 
-function getObjectIdsAsStringArray(jsonArray) {
+function getObjectIdsAsStringArray(jsonArray, idField) {
     var extractedArray = [];
     jsonArray.forEach(function (jsonData) {
-        extractedArray.push(jsonData._id);
+        extractedArray.push(jsonData[idField]);
     });
     return extractedArray;
 }
@@ -51,7 +51,7 @@ function mergeArraysById(arr1, arr2, resultFieldNameArr1, resultFieldNameArr2, c
 
     for (var i = 0; i < arr1.length; i++) {
         for (var j = 0; j < arr2.length; j++) {
-            if (arr1[i]._id.toString() === arr2[j]._id.toString()) {
+            if (arr1[i]['_id'].toString() === arr2[j]['_id'].toString()) {
                 resultArr1.push(Math.round(arr1[i][resultFieldNameArr1] * 1000) / 1000);
                 resultArr2.push(arr2[j][resultFieldNameArr2]);
             }

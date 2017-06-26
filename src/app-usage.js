@@ -11,7 +11,7 @@ function getAppUsagesForUsers(userIds, clients, startDate, endDate, cb) {
         async.waterfall([
             async.apply(db.createConnection, 'tractivedb_metrics'),
             async.apply(queryAppUsagesForUsers, userIds,
-                        util.getObjectIdsAsStringArray(result.clientIds),
+                        util.getObjectIdsAsStringArray(result.clientIds, '_id'),
                         startDate, endDate)
         ], function (err, appUsages) {
             cb(err, appUsages);
