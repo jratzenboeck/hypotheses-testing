@@ -11,12 +11,12 @@ module.exports = {
 
 function getServerCommandMetricsForUsers(commands, cmdStatistic, startDate, endDate, sampleSize, cb) {
     async.series({
-        userIds: async.apply(users.getRandomUserIds, startDate)
+        userIds: async.apply(users.getRandomSubscriptions, startDate)
     }, function (err, result) {
         async.waterfall([
             async.apply(db.createConnection, 'tractivedb_metrics'),
             async.apply(queryServerCommandMetricsForUsers, commands, cmdStatistic,
-                        util.getObjectIdsAsStringArray(result.userIds, '_id'), startDate, endDate, sampleSize)
+                        util.getObjectIdsAsStringArray(result.userIds, 'user_id'), startDate, endDate, sampleSize)
         ], function (err, result) {
             cb(err, result);
         });
@@ -32,7 +32,7 @@ function queryServerCommandMetricsForUsers(commands, cmdStatistic, userIds, star
     matchCriteria['requested_at'] = {'$gte': startDate, '$lt': endDate};
 
     var groupStage = {};
-    groupStage['_id'] = '$requested_by';
+    groupStage['_id'] = {user_id: '$requested_by', tracker_id: '$device_id'};
     groupStage[_.camelCase(cmdStatistic)] = {$avg: '$' + cmdStatistic};
 
     var pipeline = [

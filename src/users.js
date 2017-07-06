@@ -2,26 +2,26 @@ var async = require('async');
 var db = require('./db');
 
 module.exports = {
-    getRandomUserIds: getRandomUserIds,
+    getRandomSubscriptions: getRandomSubscriptions,
     getUserIdsForTrackerIds: getUserIdsForTrackerIds
 };
 
-function getRandomUserIds(createdBefore, cb) {
+function getRandomSubscriptions(createdBefore, cb) {
     async.waterfall([
         async.apply(db.createConnection, 'tractivedb'),
-        async.apply(queryRandomUserIds, createdBefore)
+        async.apply(queryRandomSubscriptions, createdBefore)
     ], function (err, result) {
         cb(err, result);
     });
 }
 
-function queryRandomUserIds(createdBefore, connection, cb) {
+function queryRandomSubscriptions(createdBefore, connection, cb) {
     var pipeline = [
         {'$match': {status: 'ACTIVE', created_at: {$lte: createdBefore}}},
-        {'$group': {_id: '$user_id', countTrackers: {$sum: 1}}},
+        {'$group': {_id: {user_id: '$user_id', tracker_id: '$tracker_id'}, countTrackers: {$sum: 1}}},
         {'$match': {countTrackers: 1}},
         {'$skip': Math.random() * 100},
-        {'$limit': 5000}
+        {'$limit': 1000}
     ];
     db.aggregate(connection, 'ppl_subscriptions', pipeline, cb);
 }

@@ -3,16 +3,14 @@ var fs = require('fs');
 
 module.exports = {
     getObjectIdsAsStringArray: getObjectIdsAsStringArray,
-    writeToCsvFile: writeToCsvFile,
-    writeResultsToConsole: writeResultsToConsole,
-    writeResultsToFile: writeResultsToFile,
-    mergeArraysById: mergeArraysById
+    mergeAndPrint: mergeAndPrint,
+    toDateString: toDateString
 };
 
 function getObjectIdsAsStringArray(jsonArray, idField) {
     var extractedArray = [];
     jsonArray.forEach(function (jsonData) {
-        extractedArray.push(jsonData[idField]);
+        extractedArray.push(jsonData['_id'][idField]);
     });
     return extractedArray;
 }
@@ -28,21 +26,32 @@ function writeToCsvFile(data, filename, options) {
     writer.end();
 }
 
-function writeResultsToConsole(res1, res2) {
-    console.log('Cmd Success Rates\n\n');
-    res1.forEach(function (cmdSr) {
-        console.log(cmdSr);
+function writeDataToFile(data, filename) {
+    var file = fs.createWriteStream(filename);
+    file.on('error', function(err) {
+        console.error('Error occurred during writing ' + err.message);
+    });
+    data.forEach(function(v) {
+        file.write(v + '\n');
+    });
+    file.end();
+}
+
+function writeResultsToConsole(res1, res2, labelResult1, labelResult2) {
+    console.log(labelResult1 + '\n\n');
+    res1.forEach(function (entry) {
+        console.log(entry);
     });
 
-    console.log('App openings\n\n');
-    res2.forEach(function (appU) {
-        console.log(appU);
+    console.log(labelResult2 + '\n\n');
+    res2.forEach(function (entry) {
+        console.log(entry);
     });
 }
 
 function writeResultsToFile(res1, res2, fileName1, fileName2) {
-    writeToCsvFile(res1, fileName1);
-    writeToCsvFile(res2, fileName2);
+    writeDataToFile(res1, fileName1);
+    writeDataToFile(res2, fileName2);
 }
 
 function mergeArraysById(arr1, arr2, resultFieldNameArr1, resultFieldNameArr2, cb) {
@@ -58,4 +67,21 @@ function mergeArraysById(arr1, arr2, resultFieldNameArr1, resultFieldNameArr2, c
         }
     }
     cb(resultArr1, resultArr2);
+}
+
+function mergeAndPrint(arr1, arr2, resultFieldNameArr1, resultFieldNameArr2, labelResult1, labelResult2, filenames) {
+    mergeArraysById(arr1, arr2, resultFieldNameArr1, resultFieldNameArr2,
+        function (res1, res2) {
+            if (!!filenames) {
+                writeResultsToFile(res1, res2, filenames[0], filenames[1]);
+            } else {
+                writeResultsToConsole(res1, res2, labelResult1, labelResult2);
+            }
+        });
+}
+
+function toDateString(date) {
+    return date.getFullYear() + '_' + (date.getMonth() + 1) + '_' +
+        date.getUTCDate() + '_' + date.getHours() + '_' +
+        date.getMinutes() + '_' + date.getSeconds();
 }
