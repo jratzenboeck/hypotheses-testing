@@ -21,7 +21,7 @@ function queryRandomSubscriptions(createdBefore, connection, cb) {
         {'$group': {_id: {user_id: '$user_id', tracker_id: '$tracker_id'}, countTrackers: {$sum: 1}}},
         {'$match': {countTrackers: 1}},
         {'$skip': Math.random() * 100},
-        {'$limit': 1000}
+        {'$limit': 3000}
     ];
     db.aggregate(connection, 'ppl_subscriptions', pipeline, cb);
 }

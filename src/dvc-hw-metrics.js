@@ -42,21 +42,7 @@ function queryBatteryLevelsForTrackers(startDate, endDate, trackerIds, connectio
         {
             '$group': {
                 '_id': '$device_id',
-                'hwReport': {$push: {batteryLevel: '$battery_level', time: '$time', hwStatus: '$hw_status'}}
-            }
-        },
-        {
-            '$lookup': {
-                from: 'ppl_subscriptions',
-                localField: '_id',
-                foreignField: 'tracker_id',
-                as: 'users'
-            }
-        },
-        {
-            '$project': {
-                '_id': {$arrayElemAt: ['$users.user_id', 0]},
-                'hwReportDetails': '$hwReport'
+                'hwReportDetails': {$push: {batteryLevel: '$battery_level', time: '$time', hwStatus: '$hw_status'}}
             }
         }
     ];
@@ -83,7 +69,7 @@ function filterBatteryLevelsForUsers(hwReports, cb) {
             }
         });
         if (timeDifferences.length) {
-            results.push({_id: hwReport._id, batteryLifeTime: _.mean(timeDifferences)});
+            results.push({_id: {tracker_id: hwReport._id}, batteryLifeTime: _.mean(timeDifferences)});
             timeDifferences = [];
         }
     });

@@ -8,27 +8,40 @@ var clients = require('./clients');
 var users = require('./users');
 var dvcHwMetrics = require('./dvc-hw-metrics');
 var dvcIdReports = require('./dvc-id-reports');
+var dvcPosReports = require('./dvc-pos-reports');
 
 var commands = [
-    'MSG_S2D_LIVE_TRACKING_MODE'
+    'MSG_S2D_LIVE_TRACKING_MODE',
+    'MSG_S2D_LED_CONTROL',
+    'MSG_S2D_BUZZER_CONTROL'
 ];
 var startDate = new Date('2017-06-01T00:00:00Z');
-var endDate = new Date('2017-06-08T00:00:00Z');
+var endDate = new Date('2017-07-01T00:00:00Z');
 
-var currentDate = util.toDateString(new Date());
-var filenames = ['data/cmdSuccessRate_' +  currentDate + '.csv', 'data/trackerUsage_' + currentDate + '.csv'];
-//cmdSuccessRateVsX(filenames, mergeTrackerUsage);
+var currentDate = new Date();
+var filenames = [util.buildFilename('data/cmdSuccessRate', currentDate, '.csv'), util.buildFilename('data/appUsage', currentDate, '.csv')]
+cmdSuccessRateVsX(filenames, mergeAppUsage);
 //cmdTerminatedRateVsAppUsage(filenames);
 //serverCmdMetrics.getServerCommandAverage(commands, 'cmd_delay_to_confirmed', startDate, endDate);
 //batteryCriticalEventsVsAppUsage();
 //systemShutDownEventsVsAppUsage();
 //errLogCountVsAppUsage(filenames);
-batteryLifeTimeVsTrackerUsage(null, mergeTrackerUsage);
+//batteryLifeTimeVsTrackerUsage(null, mergeTrackerUsage);
+//gsmRssiVsTrackerUsage(filenames, mergeTrackerUsage);
 
 function cmdSuccessRateVsX(filenames, vsFunction) {
     calcServerCmdMetricVsX(commands, 'cmd_success_rate', filenames, vsFunction);
 }
 
+function gsmRssiVsTrackerUsage(filenames, vsFunction) {
+    dvcPosReports.getAveragePosReportStatisticValueForTrackers('gsm_rssi', startDate, endDate, ['GPS'], 1086, function (err, gsmRssiAvgValues) {
+       if (err) {
+           console.error(err.message);
+           return;
+       }
+       vsFunction(gsmRssiAvgValues, 'gsmRssi', filenames);
+    });
+}
 function batteryLifeTimeVsTrackerUsage(filenames, vsFunction) {
     dvcHwMetrics.getAverageBatteryLifeTimeForTrackers(startDate, endDate, function(err, trackerBatteryLifeTimes) {
         if (err) {
@@ -102,7 +115,8 @@ function mergeAppUsage(firstResult, firstResultFieldName, filenames) {
                 console.error(err.message);
                 return;
             }
-            util.mergeAndPrint(firstResult, appUsages, firstResultFieldName, 'appOpenings', filenames)
+            util.mergeAndPrint(firstResult, appUsages, firstResultFieldName,
+                'appOpenings', 'CmdSuccessRate', 'App Usage', filenames)
         });
 }
 
@@ -115,6 +129,6 @@ function mergeTrackerUsage(firstResult, firstResultFieldName, filenames) {
                 return;
             }
             util.mergeAndPrint(firstResult, trackerUsage, firstResultFieldName,
-                'trackerUsage', 'BatteryLifeTime', 'Tracker Usage', filenames);
+                'trackerUsage', 'GsmRssi Average', 'Tracker Usage', filenames);
         });
 }
