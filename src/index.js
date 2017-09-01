@@ -34,7 +34,7 @@ function cmdSuccessRateVsX(filenames, vsFunction) {
 }
 
 function gsmRssiVsTrackerUsage(filenames, vsFunction) {
-    dvcPosReports.getAveragePosReportStatisticValueForTrackers('gsm_rssi', startDate, endDate, ['GPS'], 1086, function (err, gsmRssiAvgValues) {
+    dvcPosReports.getAveragePosReportStatisticValueForRandomTrackers('gsm_rssi', startDate, endDate, ['GPS'], 1086, function (err, gsmRssiAvgValues) {
        if (err) {
            console.error(err.message);
            return;

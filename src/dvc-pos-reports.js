@@ -3,15 +3,24 @@ var _ = require('lodash');
 var db = require('./db');
 var util = require('./util');
 var users = require('./users');
-var trackers = require('./trackers');
 
 var COLLECTION = 'dvc_pos_reports';
 
 module.exports = {
-  getAveragePosReportStatisticValueForTrackers: getAveragePosReportStatisticValueForTrackers
+  getAveragePosReportStatisticValueForRandomTrackers: getAveragePosReportStatisticValueForRandomTrackers,
+    getAveragePosReportStatisticForTracker: getAveragePosReportStatisticForTracker
 };
 
-function getAveragePosReportStatisticValueForTrackers(posReportField, startDate, endDate, allowedSensors, sampleSize, cb) {
+function getAveragePosReportStatisticForTracker(posReportField, allowedSensors, data, cb) {
+    async.waterfall([
+       async.apply(db.createConnection, 'tractivedb'),
+       async.apply(queryAveragePosReportStatistic, posReportField, allowedSensors, data.created_at, data.submit_date, data.tracker_id)
+    ], function(err, results) {
+        cb(err, results[0]);
+    });
+}
+
+function getAveragePosReportStatisticValueForRandomTrackers(posReportField, startDate, endDate, allowedSensors, sampleSize, cb) {
     async.waterfall([
        async.apply(users.getRandomSubscriptions, startDate),
         async.apply(findAveragePosReportStatistValueForTrackers, posReportField, startDate, endDate, allowedSensors, sampleSize)
@@ -47,6 +56,30 @@ function queryAveragePosReportStatisticValueForTrackers(posReportField, startDat
         },
         {
             '$limit': sampleSize
+        }
+    ];
+    db.aggregate(connection, COLLECTION, pipeline, cb);
+}
+
+function queryAveragePosReportStatistic(posReportField, allowedSensors, startDate, endDate, trackerId, connection, cb) {
+    var groupCriteria = {};
+    groupCriteria['_id'] = '$device_id';
+    groupCriteria[posReportField] = {$avg: '$' + posReportField};
+
+    var pipeline = [
+        {
+            '$match': {
+                'time': {$gte: startDate, $lte: endDate},
+                'device_id': trackerId,
+                'pos_status': {$ne: 'POS_INACCURATE'},
+                'sensor_used': {$in: allowedSensors}
+            }
+        },
+        {
+            '$group': groupCriteria
+        },
+        {
+            '$project': {'gsm_rssi': 1, '_id': 1}
         }
     ];
     db.aggregate(connection, COLLECTION, pipeline, cb);
