@@ -1,10 +1,12 @@
 var csvWriter = require('csv-write-stream');
 var fs = require('fs');
+var _ = require('lodash');
 
 module.exports = {
     getObjectIdsAsStringArray: getObjectIdsAsStringArray,
     mergeAndPrint: mergeAndPrint,
-    buildFilename: buildFilename
+    buildFilename: buildFilename,
+    mergeData: mergeData
 };
 
 function getObjectIdsAsStringArray(jsonArray, idField) {
@@ -84,6 +86,20 @@ function mergeAndPrint(arr1, arr2, resultFieldNameArr1, resultFieldNameArr2, lab
                 writeResultsToConsole(res1, res2, labelResult1, labelResult2);
             }
         });
+}
+
+function mergeData(mergeAttributeSrc, mergeAttributeDest, destinationData, sourceData, cb) {
+    for (var i = 0; i < destinationData.length; i++) {
+        for (var j = 0; j < sourceData.length; j++) {
+            if (!sourceData[j]) {
+                continue;
+            }
+            if (sourceData[j][mergeAttributeSrc].toString() === destinationData[i][mergeAttributeDest].toString()) {
+                destinationData[i] = _.assign(destinationData[i], sourceData[j]);
+            }
+        }
+    }
+    cb(null, destinationData);
 }
 
 function toDateString(date) {

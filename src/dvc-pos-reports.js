@@ -7,22 +7,32 @@ var users = require('./users');
 var COLLECTION = 'dvc_pos_reports';
 
 module.exports = {
-  getAveragePosReportStatisticValueForRandomTrackers: getAveragePosReportStatisticValueForRandomTrackers,
-    getAveragePosReportStatisticForTracker: getAveragePosReportStatisticForTracker
+    getAveragePosReportStatisticValueForRandomTrackers: getAveragePosReportStatisticValueForRandomTrackers,
+    getAveragePosReportStatisticForTracker: getAveragePosReportStatisticForTracker,
+    getNumberOfSensorReports: getNumberOfSensorReports
 };
 
 function getAveragePosReportStatisticForTracker(posReportField, allowedSensors, data, cb) {
     async.waterfall([
-       async.apply(db.createConnection, 'tractivedb'),
-       async.apply(queryAveragePosReportStatistic, posReportField, allowedSensors, data.created_at, data.submit_date, data.tracker_id)
-    ], function(err, results) {
+        async.apply(db.createConnection, 'tractivedb'),
+        async.apply(queryAveragePosReportStatistic, posReportField, allowedSensors, data.created_at, data.submit_date, data.tracker_id)
+    ], function (err, results) {
+        cb(err, results[0]);
+    });
+}
+
+function getNumberOfSensorReports(sensorUsed, data, cb) {
+    async.waterfall([
+        async.apply(db.createConnection, 'tractivedb'),
+        async.apply(queryNumberOfSensorReports, sensorUsed, data.created_at, data.submit_date, data.tracker_id)
+    ], function (err, results) {
         cb(err, results[0]);
     });
 }
 
 function getAveragePosReportStatisticValueForRandomTrackers(posReportField, startDate, endDate, allowedSensors, sampleSize, cb) {
     async.waterfall([
-       async.apply(users.getRandomSubscriptions, startDate),
+        async.apply(users.getRandomSubscriptions, startDate),
         async.apply(findAveragePosReportStatistValueForTrackers, posReportField, startDate, endDate, allowedSensors, sampleSize)
     ], cb);
 }
@@ -66,6 +76,9 @@ function queryAveragePosReportStatistic(posReportField, allowedSensors, startDat
     groupCriteria['_id'] = '$device_id';
     groupCriteria[posReportField] = {$avg: '$' + posReportField};
 
+    var projectStage = {'_id': 1};
+    projectStage[posReportField] = 1;
+
     var pipeline = [
         {
             '$match': {
@@ -79,8 +92,35 @@ function queryAveragePosReportStatistic(posReportField, allowedSensors, startDat
             '$group': groupCriteria
         },
         {
-            '$project': {'gsm_rssi': 1, '_id': 1}
+            '$project': projectStage
         }
     ];
     db.aggregate(connection, COLLECTION, pipeline, cb);
 }
+
+function queryNumberOfSensorReports(sensorUsed, startDate, endDate, trackerId, connection, cb) {
+    var groupCriteria = {
+        _id: '$device_id',
+        no_cell_locates: {$sum: 1}
+    };
+    var projectStage = {'_id': 1, 'no_cell_locates': 1};
+
+    var pipeline = [
+        {
+            '$match': {
+                'time': {$gte: startDate, $lte: endDate},
+                'device_id': trackerId,
+                'sensor_used': sensorUsed
+            }
+        },
+        {
+            '$group': groupCriteria
+        },
+        {
+            '$project': projectStage
+        }
+    ];
+    db.aggregate(connection, COLLECTION, pipeline, cb);
+}
+
+

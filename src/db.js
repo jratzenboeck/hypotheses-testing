@@ -27,6 +27,14 @@ function find(connection, collection, criteria, projection, cb) {
             });
 }
 
+function count(connection, collection, criteria, cb) {
+    connection.collection(collection)
+        .count(criteria, function(err, result) {
+            connection.close();
+            cb(err, result);
+        });
+}
+
 function findOne(connection, collection, criteria, projection, cb) {
     connection.collection(collection)
         .findOne(criteria, projection, function (err, result) {
