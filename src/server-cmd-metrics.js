@@ -4,10 +4,41 @@ var db = require('./db');
 var util = require('./util');
 var users = require('./users');
 
+var COLLECTION = 'server_command_metrics';
+
 module.exports = {
     getServerCommandMetricsForUsers: getServerCommandMetricsForUsers,
-    getServerCommandAverage: getServerCommandAverage
+    getServerCommandMetricsForTracker: getServerCommandMetricsForTracker
 };
+
+function getServerCommandMetricsForTracker(commands, cmdStatistic, data, cb) {
+    async.waterfall([
+        async.apply(db.createConnection, 'tractivedb_metrics'),
+        async.apply(queryServerCommandMetricsForTracker, commands, cmdStatistic, data.created_at, data.submit_date, data.tracker_id)
+    ], function(err, results) {
+        cb(err, results[0]);
+    });
+}
+
+function queryServerCommandMetricsForTracker(commands, cmdStatistic, startDate, endDate, trackerId, connection, cb) {
+    var matchCriteria = {};
+    matchCriteria[cmdStatistic] = {'$exists': true};
+    matchCriteria['msg_name'] = {$in: commands};
+    matchCriteria['mode_on'] = true;
+    matchCriteria['device_id'] = trackerId;
+    matchCriteria['requested_at'] = {'$gte': startDate, '$lt': endDate};
+
+    var groupStage = {_id: '$device_id'};
+    groupStage[cmdStatistic] = {$avg: '$' + cmdStatistic};
+
+    var pipeline = [
+        {'$match': matchCriteria},
+        {'$group': groupStage}
+    ];
+
+    console.log('processing tracker ' + trackerId + '...');
+    db.aggregate(connection, COLLECTION, pipeline, cb);
+}
 
 function getServerCommandMetricsForUsers(commands, cmdStatistic, startDate, endDate, sampleSize, cb) {
     async.series({

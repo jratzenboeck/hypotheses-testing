@@ -1,5 +1,5 @@
 var async = require('async');
-var db = require('../db');
+var db = require('./db');
 
 module.exports = {
     getSubscriptionActivationTime: getSubscriptionActivationTime
