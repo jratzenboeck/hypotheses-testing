@@ -12,15 +12,13 @@ module.exports = {
 };
 
 function getServerCommandMetricsForTracker(commands, cmdStatistic, data, cb) {
-    async.waterfall([
-        async.apply(db.createConnection, 'tractivedb_metrics'),
-        async.apply(queryServerCommandMetricsForTracker, commands, cmdStatistic, data.created_at, data.submit_date, data.tracker_id)
-    ], function(err, results) {
+    queryServerCommandMetricsForTracker(commands, cmdStatistic, data.created_at, data.submit_date, data.tracker_id,
+     function(err, results) {
         cb(err, results[0]);
     });
 }
 
-function queryServerCommandMetricsForTracker(commands, cmdStatistic, startDate, endDate, trackerId, connection, cb) {
+function queryServerCommandMetricsForTracker(commands, cmdStatistic, startDate, endDate, trackerId, cb) {
     var matchCriteria = {};
     matchCriteria[cmdStatistic] = {'$exists': true};
     matchCriteria['msg_name'] = {$in: commands};
@@ -36,8 +34,7 @@ function queryServerCommandMetricsForTracker(commands, cmdStatistic, startDate, 
         {'$group': groupStage}
     ];
 
-    console.log('processing tracker ' + trackerId + '...');
-    db.aggregate(connection, COLLECTION, pipeline, cb);
+    db.aggregate(db.getMetricsDbConnection(), COLLECTION, pipeline, cb);
 }
 
 function getServerCommandMetricsForUsers(commands, cmdStatistic, startDate, endDate, sampleSize, cb) {

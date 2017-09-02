@@ -6,16 +6,11 @@ module.exports = {
 };
 
 function getSubscriptionActivationTime(data, cb) {
-    async.waterfall([
-        async.apply(db.createConnection, 'tractivedb'),
-        async.apply(findSubscriptionActivationTime, data.user_id, data.tracker_id)
-    ], function(err, result) {
-        return cb(err, result);
-    });
+    findSubscriptionActivationTime(data.user_id, data.tracker_id, cb);
 }
 
-function findSubscriptionActivationTime(userId, trackerId, connection, cb) {
-    return db.findOne(connection, 'ppl_subscriptions',
+function findSubscriptionActivationTime(userId, trackerId, cb) {
+    return db.findOne(db.getTractiveDbConnection(), 'ppl_subscriptions',
         {
             user_id: userId,
             tracker_id: trackerId

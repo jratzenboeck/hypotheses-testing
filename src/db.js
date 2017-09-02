@@ -1,10 +1,14 @@
 var MongoClient = require('mongodb').MongoClient;
 
+var connection = {};
+
 module.exports = {
     createConnection: createConnection,
     aggregate: aggregate,
     find: find,
-    findOne: findOne
+    findOne: findOne,
+    getTractiveDbConnection: getTractiveDbConnection,
+    getMetricsDbConnection: getMetricsDbConnection
 };
 
 
@@ -13,8 +17,18 @@ function createConnection(database, cb) {
         if (err) {
             throw err;
         }
+        connection[database] = db;
+
         cb(null, db);
     });
+}
+
+function getTractiveDbConnection() {
+    return connection.tractivedb;
+}
+
+function getMetricsDbConnection() {
+    return connection.tractivedb_metrics;
 }
 
 function find(connection, collection, criteria, projection, cb) {
@@ -22,7 +36,7 @@ function find(connection, collection, criteria, projection, cb) {
         .find(criteria, projection)
         .toArray(
             function (err, result) {
-                connection.close();
+                //connection.close();
                 cb(err, result);
             });
 }
@@ -38,14 +52,14 @@ function count(connection, collection, criteria, cb) {
 function findOne(connection, collection, criteria, projection, cb) {
     connection.collection(collection)
         .findOne(criteria, projection, function (err, result) {
-            connection.close();
+            //connection.close();
             cb(err, result);
         });
 }
 
 function aggregate(connection, collection, pipeline, cb) {
     connection.collection(collection).aggregate(pipeline, function (err, result) {
-        connection.close();
+        //connection.close();
         cb(err, result);
     });
 }

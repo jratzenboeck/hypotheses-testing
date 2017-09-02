@@ -5,6 +5,7 @@ var idReport = require('./id-report-data');
 var posReport = require('./pos-report-data');
 var serverCmd = require('./server-cmd-data');
 var subscription = require('./subscription-data');
+var util = require('../util');
 
 insertCustomerSurveyData();
 
@@ -18,6 +19,8 @@ function insertCustomerSurveyData() {
         } else {
             console.log(JSON.stringify(finalResultData));
             console.log(finalResultData.length);
+            //var headers = ['_id', 'submit_date', 'rating', 'recommendation_score', 'user_id', 'tracker_id', 'created_at', 'cmd_success_rate', 'cmd_cancelled_rate'];
+            //util.writeDataToFile(finalResultData, headers, 'ml_data/test_data.csv');
         }
     });
 }
@@ -25,8 +28,8 @@ function insertCustomerSurveyData() {
 function expandData(customerSurveyData, cb) {
     async.waterfall([
         async.apply(subscription.insertStartDate, customerSurveyData),
-
-        serverCmd.insertServerCmdMetricsData
+        idReport.insertNumberOfDaysInUse
+        //serverCmd.insertServerCmdMetricsData
     ], cb);
 }
 

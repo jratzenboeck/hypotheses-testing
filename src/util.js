@@ -6,7 +6,8 @@ module.exports = {
     getObjectIdsAsStringArray: getObjectIdsAsStringArray,
     mergeAndPrint: mergeAndPrint,
     buildFilename: buildFilename,
-    mergeData: mergeData
+    mergeData: mergeData,
+    writeDataToFile: writeDataToFile
 };
 
 function getObjectIdsAsStringArray(jsonArray, idField) {
@@ -34,14 +35,27 @@ function writeToCsvFile(data, filename, options) {
     writer.end();
 }
 
-function writeDataToFile(data, filename) {
+function writeDataToFile(data, headers, filename) {
     var file = fs.createWriteStream(filename);
+
     file.on('error', function(err) {
         console.error('Error occurred during writing ' + err.message);
     });
-    data.forEach(function(v) {
-        file.write(v + '\n');
-    });
+
+    for (var i = 0; i < headers.length; i++) {
+        file.write(headers[i]);
+        if (i < headers.length - 1) {
+            file.write(';');
+        }
+    }
+    for (var j = 0; j < data.length; j++) {
+        file.write(data[j]);
+        if (i < data.length - 1) {
+            file.write(';')
+        } else {
+            file.write('\n');
+        }
+    }
     file.end();
 }
 
