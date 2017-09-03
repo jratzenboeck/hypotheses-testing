@@ -4,6 +4,8 @@ var connection = {};
 
 module.exports = {
     createConnection: createConnection,
+    createTractiveDbConnection: createTractiveDbConnection,
+    createMetricsConnection: createMetricsConnection,
     aggregate: aggregate,
     find: find,
     findOne: findOne,
@@ -11,6 +13,28 @@ module.exports = {
     getMetricsDbConnection: getMetricsDbConnection
 };
 
+function createDbConnection(database, cb) {
+    MongoClient.connect('mongodb://localhost:47018/' + database, function (err, db) {
+        if (err) {
+            throw err;
+        }
+        if (database === 'tractivedb') {
+            connection.tractivedb = db;
+        } else {
+            connection.metrics = db;
+        }
+
+        cb(null);
+    });
+}
+
+function createMetricsConnection(cb) {
+    createDbConnection('tractivedb_metrics', cb);
+}
+
+function createTractiveDbConnection(cb) {
+    createDbConnection('tractivedb', cb);
+}
 
 function createConnection(database, cb) {
     MongoClient.connect('mongodb://localhost:47018/' + database, function (err, db) {
@@ -28,7 +52,7 @@ function getTractiveDbConnection() {
 }
 
 function getMetricsDbConnection() {
-    return connection.tractivedb_metrics;
+    return connection.metrics;
 }
 
 function find(connection, collection, criteria, projection, cb) {

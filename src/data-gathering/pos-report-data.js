@@ -8,10 +8,10 @@ module.exports = {
 
 function insertPosReportData(dataInstances, cb) {
     async.waterfall([
-        async.apply(insertAverageGsmRssi, dataInstances),
-        insertAveragePosUncertainty,
-        insertNumberOfCellLocates,
-        insertAverageNumberOfSatellites
+        async.apply(insertAverageGsmRssi, dataInstances)
+        // insertAveragePosUncertainty,
+        // insertNumberOfCellLocates,
+        // insertAverageNumberOfSatellites
     ], cb);
 }
 

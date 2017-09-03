@@ -14,6 +14,7 @@ module.exports = {
 function getServerCommandMetricsForTracker(commands, cmdStatistic, data, cb) {
     queryServerCommandMetricsForTracker(commands, cmdStatistic, data.created_at, data.submit_date, data.tracker_id,
      function(err, results) {
+        console.log(results[0]);
         cb(err, results[0]);
     });
 }

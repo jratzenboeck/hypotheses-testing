@@ -42,21 +42,24 @@ function writeDataToFile(data, headers, filename) {
         console.error('Error occurred during writing ' + err.message);
     });
 
-    for (var i = 0; i < headers.length; i++) {
-        file.write(headers[i]);
-        if (i < headers.length - 1) {
-            file.write(';');
-        }
-    }
-    for (var j = 0; j < data.length; j++) {
-        file.write(data[j]);
-        if (i < data.length - 1) {
-            file.write(';')
-        } else {
-            file.write('\n');
-        }
-    }
+    writeHeaders(headers, file);
+    writeData(data, file);
+
     file.end();
+}
+
+function writeHeaders(headers, file) {
+    file.write(_.join(headers, ';'));
+    file.write('\n');
+}
+
+function writeData(data, file) {
+    for (var i = 0; i < data.length; i++) {
+        data[i] = _.omit(data[i], ['submit_date', 'created_at']);
+        var dataRow = _.map(data[i], _.identity);
+        file.write(_.join(dataRow, ';'));
+        file.write('\n');
+    }
 }
 
 function writeResultsToConsole(res1, res2, labelResult1, labelResult2) {

@@ -1,6 +1,7 @@
 var async = require('async');
 var serverCmdMetrics = require('../server-cmd-metrics');
 var util = require('./utility');
+var db = require('../db');
 
 module.exports = {
     insertServerCmdMetricsData: insertServerCmdMetricsData
@@ -16,7 +17,9 @@ function getAverageServerCmdSuccessRate(dataInstances, cb) {
 }
 
 function getAverageServerCmdRate(dataInstances, commands, cmdStatistic, cb) {
-    async.map(dataInstances, async.apply(serverCmdMetrics.getServerCommandMetricsForTracker, commands, cmdStatistic), cb);
+    db.createMetricsConnection(function() {
+        async.map(dataInstances, async.apply(serverCmdMetrics.getServerCommandMetricsForTracker, commands, cmdStatistic), cb)
+    });
 }
 
 function insertAverageCmdCancelledRate(dataInstances, cb) {

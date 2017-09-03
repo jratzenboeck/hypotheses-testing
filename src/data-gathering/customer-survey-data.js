@@ -8,14 +8,14 @@ module.exports = {
 };
 
 function getUserSurveyData(cb) {
-    async.waterfall([
-        async.apply(db.createConnection, 'tractivedb'),
+    async.series([
+        db.createTractiveDbConnection,
         findUserSurveyData
     ], function(err, result) {
-        cb(err, result);
+        cb(err, result[1]);
     });
 }
 
-function findUserSurveyData(connection, cb) {
-    return db.find(connection, COLLECTION, {tracker_id: {$exists: true}}, {_id: 0, submit_date: 1, rating: 1, recommendation_score: 1, user_id: 1, tracker_id: 1}, cb);
+function findUserSurveyData(cb) {
+    return db.find(db.getTractiveDbConnection(), COLLECTION, {tracker_id: {$exists: true}}, {_id: 0, submit_date: 1, rating: 1, recommendation_score: 1, user_id: 1, tracker_id: 1}, cb);
 }
