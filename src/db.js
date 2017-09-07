@@ -55,9 +55,9 @@ function getMetricsDbConnection() {
     return connection.metrics;
 }
 
-function find(connection, collection, criteria, projection, cb) {
+function find(connection, collection, criteria, projection, options, cb) {
     connection.collection(collection)
-        .find(criteria, projection)
+        .find(criteria, projection, options || {})
         .toArray(
             function (err, result) {
                 //connection.close();

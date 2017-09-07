@@ -5,6 +5,8 @@ var idReport = require('./id-report-data');
 var posReport = require('./pos-report-data');
 var serverCmd = require('./server-cmd-data');
 var subscription = require('./subscription-data');
+var user = require('./user-data');
+var customerSupport = require('./customer-support-data');
 var util = require('../util');
 
 insertCustomerSurveyData();
@@ -19,7 +21,7 @@ function insertCustomerSurveyData() {
         } else {
             console.log(JSON.stringify(finalResultData));
             console.log(finalResultData.length);
-            var headers = ['rating', 'recommendation_score', 'user_id', 'tracker_id'];
+            var headers = _.keys(_.first(_.filter(finalResultData, function(data) { return data.ticket_count > 0})));
             util.writeDataToFile(finalResultData, headers, 'ml_data/test_data.csv');
         }
     });
@@ -27,7 +29,9 @@ function insertCustomerSurveyData() {
 
 function expandData(customerSurveyData, cb) {
     async.waterfall([
-        async.apply(subscription.insertStartDate, customerSurveyData)
+        async.apply(user.insertUserEmail, customerSurveyData),
+        subscription.insertStartDate,
+        customerSupport.insertCustomerSupportData
         // posReport.insertPosReportData,
         // idReport.insertNumberOfDaysInUse,
         // serverCmd.insertServerCmdMetricsData

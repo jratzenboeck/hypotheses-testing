@@ -1,13 +1,15 @@
 var csvWriter = require('csv-write-stream');
 var fs = require('fs');
 var _ = require('lodash');
+var moment = require('moment');
 
 module.exports = {
     getObjectIdsAsStringArray: getObjectIdsAsStringArray,
     mergeAndPrint: mergeAndPrint,
     buildFilename: buildFilename,
     mergeData: mergeData,
-    writeDataToFile: writeDataToFile
+    writeDataToFile: writeDataToFile,
+    formatDate: formatDate
 };
 
 function getObjectIdsAsStringArray(jsonArray, idField) {
@@ -55,7 +57,7 @@ function writeHeaders(headers, file) {
 
 function writeData(data, file) {
     for (var i = 0; i < data.length; i++) {
-        data[i] = _.omit(data[i], ['submit_date', 'created_at']);
+        data[i] = _.omit(data[i], ['submit_date', 'created_at', '_id']);
         var dataRow = _.map(data[i], _.identity);
         file.write(_.join(dataRow, ';'));
         file.write('\n');
@@ -125,6 +127,11 @@ function toDateString(date) {
         date.getMinutes() + '_' + date.getSeconds();
 }
 
+function formatDate(date) {
+    return moment(date).format('YYYY-MM-DD');
+}
+
 function buildFilename(prefix, date, fileExtension) {
     return prefix + '_' + toDateString(date) + fileExtension;
 }
+
