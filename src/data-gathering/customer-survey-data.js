@@ -17,5 +17,5 @@ function getUserSurveyData(cb) {
 }
 
 function findUserSurveyData(cb) {
-    return db.find(db.getTractiveDbConnection(), COLLECTION, {tracker_id: {$exists: true}}, {_id: 0, submit_date: 1, rating: 1, recommendation_score: 1, user_id: 1, tracker_id: 1}, {limit: 100}, cb);
+    return db.find(db.getTractiveDbConnection(), COLLECTION, {tracker_id: {$exists: true}}, {_id: 0, submit_date: 1, rating: 1, recommendation_score: 1, user_id: 1, tracker_id: 1}, {}, cb);
 }
