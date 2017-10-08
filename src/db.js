@@ -9,6 +9,7 @@ module.exports = {
     aggregate: aggregate,
     find: find,
     findOne: findOne,
+    count: count,
     getTractiveDbConnection: getTractiveDbConnection,
     getMetricsDbConnection: getMetricsDbConnection
 };
@@ -68,7 +69,6 @@ function find(connection, collection, criteria, projection, options, cb) {
 function count(connection, collection, criteria, cb) {
     connection.collection(collection)
         .count(criteria, function(err, result) {
-            connection.close();
             cb(err, result);
         });
 }
