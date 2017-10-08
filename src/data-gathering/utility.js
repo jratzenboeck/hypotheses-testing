@@ -1,6 +1,5 @@
 var async = require('async');
 var util = require('../util');
-var moment = require('moment');
 
 module.exports = {
     insertAverageStatisticValue: insertAverageStatisticValue
