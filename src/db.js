@@ -10,6 +10,7 @@ module.exports = {
     find: find,
     findOne: findOne,
     count: count,
+    distinct: distinct,
     getTractiveDbConnection: getTractiveDbConnection,
     getMetricsDbConnection: getMetricsDbConnection
 };
@@ -86,4 +87,8 @@ function aggregate(connection, collection, pipeline, cb) {
         //connection.close();
         cb(err, result);
     });
+}
+
+function distinct(connection, collection, key, cb) {
+    connection.collection(collection).distinct(key, {}, cb);
 }
