@@ -25,8 +25,8 @@ function getGeofenceData(dataInstances, cb) {
 function getGeofenceDataForDevice(data, cb) {
     async.parallel([
         async.apply(aggregateGeofencesForDevice, data.tracker_id, data.submit_date),
-        async.apply(queryNumberOfActiveGeofencesForDevice, data.tracker_id, data.submit_date)
-        //async.apply(aggregateGeofenceIconsForDevice, data.tracker_id, data.submit_date),
+        async.apply(queryNumberOfActiveGeofencesForDevice, data.tracker_id, data.submit_date),
+        async.apply(aggregateGeofenceIconsForDevice, data.tracker_id, data.submit_date)
     ], function(err, result) {
         if (err) {
             return cb(err, null);
@@ -46,7 +46,13 @@ function getGeofenceDataForDevice(data, cb) {
             geofenceData.number_of_circular_geofences = getNumberOfGeofencesByShape(result[0], 'CIRCLE');
             geofenceData.number_of_rectangular_geofences = getNumberOfGeofencesByShape(result[0], 'RECTANGLE');
             geofenceData.number_of_active_geofences = result[1];
-
+            var icons = result[2];
+            _.forEach(icons, function(iconData) {
+                var icon = iconData._id.icon;
+                if (!!icon) {
+                    geofenceData[icon.toLowerCase()] = iconData.count;
+                }
+            });
             cb(err, geofenceData);
         }
     });
