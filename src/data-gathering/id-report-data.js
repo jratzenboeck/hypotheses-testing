@@ -7,6 +7,7 @@ module.exports = {
 };
 
 function insertNumberOfDaysInUse(dataInstances, cb) {
+    console.log('Fetching number of days in use...');
     async.waterfall([
         async.apply(getNumberOfDaysInUse, dataInstances),
         async.apply(util.mergeData, '_id', 'tracker_id', dataInstances)

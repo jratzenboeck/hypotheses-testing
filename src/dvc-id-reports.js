@@ -12,7 +12,6 @@ module.exports = {
 
 function getTrackerUsageMetrics(startDate, endDate, trackerIds, cb) {
     async.waterfall([
-        async.apply(db.createConnection, 'tractivedb'),
         async.apply(queryTrackerUsageMetrics, startDate, endDate, trackerIds)
     ], cb)
 }
@@ -25,10 +24,7 @@ function getDaysInUseOfTracker(data, cb) {
         if (err) {
             cb(err, null);
         } else {
-            var result;
-            if (!!results[0]) {
-                result = {_id: results[0]._id.tracker_id, days_in_use: results.length}
-            }
+            var result = {_id: data.tracker_id, days_in_use: results.length};
             cb(null, result);
         }
     });
@@ -52,7 +48,7 @@ function queryDaysInUseOfTracker(startDate, endDate, trackerId, cb) {
     db.aggregate(db.getTractiveDbConnection(), COLLECTION, pipeline, cb);
 }
 
-function queryTrackerUsageMetrics(startDate, endDate, trackerIds, connection, cb) {
+function queryTrackerUsageMetrics(startDate, endDate, trackerIds, cb) {
     var pipeline = [
         {
             '$match': {
@@ -64,6 +60,6 @@ function queryTrackerUsageMetrics(startDate, endDate, trackerIds, connection, cb
             '$group': {'_id': '$device_id', trackerUsage: {$sum: 1}}
         }
     ];
-    db.aggregate(connection, COLLECTION, pipeline, cb);
+    db.aggregate(db.getTractiveDbConnection(), COLLECTION, pipeline, cb);
 }
 
