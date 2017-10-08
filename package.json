@@ -4,14 +4,16 @@
   "description": "Application for Hypotheses Testing",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "node src/data-gathering/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Jürgen Ratzenböck",
   "license": "ISC",
   "dependencies": {
     "async": "^2.5.0",
-    "mongodb": "^2.2.31"
+    "base-64": "^0.1.0",
+    "mongodb": "^2.2.31",
+    "request": "^2.81.0"
   },
   "devDependencies": {
     "csv-write-stream": "^2.0.0",
