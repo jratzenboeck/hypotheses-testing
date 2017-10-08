@@ -13,10 +13,12 @@ module.exports = {
 
 function getServerCommandMetricsForTracker(commands, cmdStatistic, data, cb) {
     queryServerCommandMetricsForTracker(commands, cmdStatistic, data.created_at, data.submit_date, data.tracker_id,
-     function(err, results) {
-        console.log(results[0]);
-        cb(err, results[0]);
-    });
+        function (err, results) {
+            var result = {_id: data.tracker_id};
+            result[cmdStatistic] = results.length > 0 ? results[0][cmdStatistic] : -1;
+            console.log(result);
+            cb(err, result);
+        });
 }
 
 function queryServerCommandMetricsForTracker(commands, cmdStatistic, startDate, endDate, trackerId, cb) {
@@ -45,7 +47,7 @@ function getServerCommandMetricsForUsers(commands, cmdStatistic, startDate, endD
         async.waterfall([
             async.apply(db.createConnection, 'tractivedb_metrics'),
             async.apply(queryServerCommandMetricsForUsers, commands, cmdStatistic,
-                        util.getObjectIdsAsStringArray(result.userIds, 'user_id'), startDate, endDate, sampleSize)
+                util.getObjectIdsAsStringArray(result.userIds, 'user_id'), startDate, endDate, sampleSize)
         ], function (err, result) {
             cb(err, result);
         });

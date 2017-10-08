@@ -8,7 +8,7 @@ module.exports = {
 };
 
 function insertAverageCmdSuccessRate(dataInstances, cb) {
-    console.log('cmd_success_rate...');
+    console.log('Fetching cmd_success_rate...');
     util.insertAverageStatisticValue(dataInstances, getAverageServerCmdSuccessRate, cb);
 }
 
@@ -17,13 +17,11 @@ function getAverageServerCmdSuccessRate(dataInstances, cb) {
 }
 
 function getAverageServerCmdRate(dataInstances, commands, cmdStatistic, cb) {
-    db.createMetricsConnection(function() {
-        async.map(dataInstances, async.apply(serverCmdMetrics.getServerCommandMetricsForTracker, commands, cmdStatistic), cb)
-    });
+    async.map(dataInstances, async.apply(serverCmdMetrics.getServerCommandMetricsForTracker, commands, cmdStatistic), cb)
 }
 
 function insertAverageCmdCancelledRate(dataInstances, cb) {
-    console.log('cmd_cancelled_rate...');
+    console.log('Fetching cmd_cancelled_rate...');
     util.insertAverageStatisticValue(dataInstances, getAverageCmdCancelledRate, cb);
 }
 
@@ -32,17 +30,20 @@ function getAverageCmdCancelledRate(dataInstances, cb) {
 }
 
 function insertServerCmdMetricsData(dataInstances, cb) {
-    async.waterfall([
-        async.apply(insertAverageCmdSuccessRate, dataInstances),
-        insertAverageCmdCancelledRate
-        // insertAverageCmdTerminatedRate,
-        // insertAverageCmdDelayToConfirmed,
-        // insertAverageCmdDelayToPosAny,
-        // insertAverageCmdDelayToPosNew
-    ], cb);
+    db.createMetricsConnection(function() {
+        async.waterfall([
+            async.apply(insertAverageCmdSuccessRate, dataInstances),
+            insertAverageCmdCancelledRate,
+            insertAverageCmdTerminatedRate,
+            insertAverageCmdDelayToConfirmed,
+            insertAverageCmdDelayToPosAny,
+            insertAverageCmdDelayToPosNew
+        ], cb);
+    });
 }
 
 function insertAverageCmdTerminatedRate(dataInstances, cb) {
+    console.log('Fetching cmd_terminated_rate...');
     util.insertAverageStatisticValue(dataInstances, getAverageCmdTerminatedRate, cb);
 }
 
@@ -51,6 +52,7 @@ function getAverageCmdTerminatedRate(dataInstances, cb) {
 }
 
 function insertAverageCmdDelayToConfirmed(dataInstances, cb) {
+    console.log('Fetching cmd_delay_confirmed...');
     util.insertAverageStatisticValue(dataInstances, getAverageCmdDelayToConfirmed, cb);
 }
 
@@ -59,6 +61,7 @@ function getAverageCmdDelayToConfirmed(dataInstances, cb) {
 }
 
 function insertAverageCmdDelayToPosAny(dataInstances, cb) {
+    console.log('Fetching cmd_delay_to_pos_any...');
     util.insertAverageStatisticValue(dataInstances, getAverageCmdDelayToPosAny, cb);
 }
 
@@ -67,6 +70,7 @@ function getAverageCmdDelayToPosAny(dataInstances, cb) {
 }
 
 function insertAverageCmdDelayToPosNew(dataInstances, cb) {
+    console.log('Fetching cmd_delay_to_pos_new...');
     util.insertAverageStatisticValue(dataInstances, getAverageCmdDelayToPosNew, cb);
 }
 
