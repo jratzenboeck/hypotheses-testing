@@ -4,9 +4,21 @@ var util = require('./util');
 var users = require('./users');
 
 module.exports = {
-    getTrackerIdsOfUsers: getTrackerIdsOfUsers,
-    getRandomTrackerIds: getRandomTrackerIds
+    getRandomTrackerIds: getRandomTrackerIds,
+    getDeviceData: getDeviceData
 };
+
+function getDeviceData(data, cb) {
+    findDeviceData(data.tracker_id, cb);
+}
+
+function findDeviceData(trackerId, cb) {
+    return db.findOne(db.getTractiveDbConnection(), 'devices',
+        {
+            _id: trackerId
+        },
+        {model_number: 1, sim_type: 1, hw_edition: 1, fw_version: 1}, cb);
+}
 
 function getTrackerIdsOfUsers(userIds, cb) {
     async.waterfall([

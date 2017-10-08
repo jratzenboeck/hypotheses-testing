@@ -1,19 +1,44 @@
-var async = require('async');
 var db = require('./db');
 
 module.exports = {
-    getSubscriptionActivationTime: getSubscriptionActivationTime
+    getSubscriptionDataForUser: getSubscriptionDataForUser
 };
 
-function getSubscriptionActivationTime(data, cb) {
-    findSubscriptionActivationTime(data.user_id, data.tracker_id, cb);
+function getSubscriptionDataForUser(data, cb) {
+    findSubscriptionData(data.user_id, data.tracker_id, function(err, result) {
+        if (err) {
+            return cb(err, null);
+        }
+        cb(err, result[0]);
+    });
 }
 
-function findSubscriptionActivationTime(userId, trackerId, cb) {
-    return db.findOne(db.getTractiveDbConnection(), 'ppl_subscriptions',
+function findSubscriptionData(userId, trackerId, cb) {
+    var pipeline = [
         {
-            user_id: userId,
-            tracker_id: trackerId
+            '$match': {
+                user_id: userId,
+                tracker_id: trackerId
+            }
         },
-        {user_id: 1, tracker_id: 1, created_at: 1, _id: 0}, cb);
+        {
+            '$lookup': {
+                from: 'ppl_payment_plans',
+                localField: 'payment_plan_id',
+                foreignField: '_id',
+                as: 'payment_plan'
+            }
+        },
+        {
+            '$unwind': '$payment_plan'
+        },
+        {
+            '$project': {
+                user_id: 1, tracker_id: 1, created_at: 1, _id: 0,
+                additional_service_ids: 1, start_data: 1, 'payment_plan.interval': 1,
+                'payment_plan.type': 1
+            }
+        }
+    ];
+    return db.aggregate(db.getTractiveDbConnection(), 'ppl_subscriptions', pipeline, cb);
 }

@@ -3,16 +3,17 @@ var subscriptions = require('../subscriptions');
 var util = require('../util');
 
 module.exports = {
-    insertStartDate: insertStartDate
+    insertSubscriptionData: insertSubscriptionData
 };
 
-function insertStartDate(dataInstances, cb) {
+function insertSubscriptionData(dataInstances, cb) {
+    console.log('Fetching subscriptions data...');
     async.waterfall([
-        async.apply(getStartDate, dataInstances),
+        async.apply(getSubscriptionData, dataInstances),
         async.apply(util.mergeData, 'user_id', 'user_id', dataInstances)
     ], cb);
 }
 
-function getStartDate(dataInstances, cb) {
-    async.map(dataInstances, subscriptions.getSubscriptionActivationTime, cb);
+function getSubscriptionData(dataInstances, cb) {
+    async.map(dataInstances, subscriptions.getSubscriptionDataForUser, cb);
 }
