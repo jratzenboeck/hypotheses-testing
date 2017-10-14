@@ -9,7 +9,7 @@ module.exports = {
 
 function insertAverageCmdSuccessRate(dataInstances, cb) {
     console.log('Fetching cmd_success_rate...');
-    util.insertAverageStatisticValueTracker(dataInstances, getAverageServerCmdSuccessRate, cb);
+    util.insertAverageStatisticValue(dataInstances, getAverageServerCmdSuccessRate, cb);
 }
 
 function getAverageServerCmdSuccessRate(dataInstances, cb) {
@@ -22,7 +22,7 @@ function getAverageServerCmdRate(dataInstances, commands, cmdStatistic, cb) {
 
 function insertAverageCmdCancelledRate(dataInstances, cb) {
     console.log('Fetching cmd_cancelled_rate...');
-    util.insertAverageStatisticValueTracker(dataInstances, getAverageCmdCancelledRate, cb);
+    util.insertAverageStatisticValue(dataInstances, getAverageCmdCancelledRate, cb);
 }
 
 function getAverageCmdCancelledRate(dataInstances, cb) {
@@ -44,7 +44,7 @@ function insertServerCmdMetricsData(dataInstances, cb) {
 
 function insertAverageCmdTerminatedRate(dataInstances, cb) {
     console.log('Fetching cmd_terminated_rate...');
-    util.insertAverageStatisticValueTracker(dataInstances, getAverageCmdTerminatedRate, cb);
+    util.insertAverageStatisticValue(dataInstances, getAverageCmdTerminatedRate, cb);
 }
 
 function getAverageCmdTerminatedRate(dataInstances, cb) {
@@ -53,7 +53,7 @@ function getAverageCmdTerminatedRate(dataInstances, cb) {
 
 function insertAverageCmdDelayToConfirmed(dataInstances, cb) {
     console.log('Fetching cmd_delay_confirmed...');
-    util.insertAverageStatisticValueTracker(dataInstances, getAverageCmdDelayToConfirmed, cb);
+    util.insertAverageStatisticValue(dataInstances, getAverageCmdDelayToConfirmed, cb);
 }
 
 function getAverageCmdDelayToConfirmed(dataInstances, cb) {
@@ -62,7 +62,7 @@ function getAverageCmdDelayToConfirmed(dataInstances, cb) {
 
 function insertAverageCmdDelayToPosAny(dataInstances, cb) {
     console.log('Fetching cmd_delay_to_pos_any...');
-    util.insertAverageStatisticValueTracker(dataInstances, getAverageCmdDelayToPosAny, cb);
+    util.insertAverageStatisticValue(dataInstances, getAverageCmdDelayToPosAny, cb);
 }
 
 function getAverageCmdDelayToPosAny(dataInstances, cb) {
@@ -71,7 +71,7 @@ function getAverageCmdDelayToPosAny(dataInstances, cb) {
 
 function insertAverageCmdDelayToPosNew(dataInstances, cb) {
     console.log('Fetching cmd_delay_to_pos_new...');
-    util.insertAverageStatisticValueTracker(dataInstances, getAverageCmdDelayToPosNew, cb);
+    util.insertAverageStatisticValue(dataInstances, getAverageCmdDelayToPosNew, cb);
 }
 
 function getAverageCmdDelayToPosNew(dataInstances, cb) {

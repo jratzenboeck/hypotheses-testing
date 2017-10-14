@@ -17,7 +17,7 @@ function insertPosReportData(dataInstances, cb) {
 
 function insertAverageGsmRssi(dataInstances, cb) {
     console.log('Fetching avg gsm rssi...');
-    util.insertAverageStatisticValueTracker(dataInstances, getAverageGsmRssi, cb);
+    util.insertAverageStatisticValue(dataInstances, getAverageGsmRssi, cb);
 }
 
 function getAverageGsmRssi(dataInstances, cb) {
@@ -26,7 +26,7 @@ function getAverageGsmRssi(dataInstances, cb) {
 
 function insertAveragePosUncertainty(dataInstances, cb) {
     console.log('Fetching avg pos uncertainty...');
-    util.insertAverageStatisticValueTracker(dataInstances, getAveragePosUncertainty, cb);
+    util.insertAverageStatisticValue(dataInstances, getAveragePosUncertainty, cb);
 }
 
 function getAveragePosUncertainty(dataInstances, cb) {
@@ -35,7 +35,7 @@ function getAveragePosUncertainty(dataInstances, cb) {
 
 function insertNumberOfCellLocates(dataInstances, cb) {
     console.log('Fetching number of cell locates...');
-    util.insertAverageStatisticValueTracker(dataInstances, getNumberOfCellLocates, cb);
+    util.insertAverageStatisticValue(dataInstances, getNumberOfCellLocates, cb);
 }
 
 function getNumberOfCellLocates(dataInstances, cb) {
@@ -44,7 +44,7 @@ function getNumberOfCellLocates(dataInstances, cb) {
 
 function insertAverageNumberOfSatellites(dataInstances, cb) {
     console.log('Fetching avg number of satellites...');
-    util.insertAverageStatisticValueTracker(dataInstances, getAverageNumberOfSatellites, cb);
+    util.insertAverageStatisticValue(dataInstances, getAverageNumberOfSatellites, cb);
 }
 
 function getAverageNumberOfSatellites(dataInstances, cb) {

@@ -13,12 +13,20 @@ module.exports = {
 
 function insertShareDataForTrackers(dataInstances, cb) {
     console.log('Fetching sent share data for trackers...');
-    utility.insertAverageStatisticValueTracker(dataInstances, getNumberOfSharesForTracker, cb);
+    utility.insertAverageStatisticValue(dataInstances, getNumberOfSharesForTrackers, cb);
 }
 
 function insertReceivedSharesForUsers(dataInstances, cb) {
     console.log('Fetching received share data for users...');
-    utility.insertAverageStatisticValueUser(dataInstances, getNumberOfReceivedSharesForUser, cb)
+    utility.insertAverageStatisticValueUser(dataInstances, getNumberOfReceivedSharesForUsers, cb)
+}
+
+function getNumberOfSharesForTrackers(dataInstances, cb) {
+    async.map(dataInstances, getNumberOfSharesForTracker, cb);
+}
+
+function getNumberOfReceivedSharesForUsers(dataInstances, cb) {
+    async.map(dataInstances, getNumberOfReceivedSharesForUser, cb);
 }
 
 function getNumberOfReceivedSharesForUser(data, cb) {
@@ -33,7 +41,7 @@ function queryNumberOfReceivedSharesForUser(userId, submitDate, cb) {
 
 function getNumberOfSharesForTracker(data, cb) {
     queryNumberOfSharesForTracker(data.tracker_id, data.submit_date, function(err, result) {
-        cb(err, {_id: data.tracker_id, number_of_shares: result});
+        cb(err, {_id: data.tracker_id, number_of_sent_shares: result});
     });
 }
 

@@ -2,19 +2,26 @@ var async = require('async');
 var util = require('../util');
 
 module.exports = {
-    insertAverageStatisticValueTracker: insertAverageStatisticValueTracker,
-    insertAverageStatisticValueUser: insertAverageStatisticValueUser
+    insertAverageStatisticValue: insertAverageStatisticValue,
+    insertAverageStatisticValueUser: insertAverageStatisticValueUser,
+    insertAverageStatisticValueNew: insertAverageStatisticValueNew
 };
 
-function insertAverageStatisticValueTracker(dataInstances, func, cb) {
-    insertAverageStatisticValue(dataInstances, func, '_id', 'tracker_id', cb);
+function insertAverageStatisticValue(dataInstances, func, cb) {
+    async.waterfall([
+        async.apply(func, dataInstances),
+        async.apply(util.mergeData, '_id', 'tracker_id', dataInstances)
+    ], cb);
 }
 
 function insertAverageStatisticValueUser(dataInstances, func, cb) {
-    insertAverageStatisticValue(dataInstances, func, '_id', 'user_id', cb);
+    async.waterfall([
+        async.apply(func, dataInstances),
+        async.apply(util.mergeData, '_id', 'user_id', dataInstances)
+    ], cb);
 }
 
-function insertAverageStatisticValue(dataInstances, func, srcAttr, destAttr, cb) {
+function insertAverageStatisticValueNew(dataInstances, func, srcAttr, destAttr, cb) {
     async.waterfall([
         async.apply(getData, dataInstances, func),
         async.apply(util.mergeData, srcAttr, destAttr, dataInstances)

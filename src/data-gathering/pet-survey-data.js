@@ -13,7 +13,7 @@ module.exports = {
 
 function insertPetSurveyData(dataInstances, cb) {
     console.log('Fetching pet survey data for users...');
-    utility.insertAverageStatisticValueUser(dataInstances, getPetSurveyDataForUser, cb);
+    utility.insertAverageStatisticValueNew(dataInstances, getPetSurveyDataForUser, '_id', 'user_id', cb);
 }
 
 function getPetSurveyDataForUser(data, cb) {
