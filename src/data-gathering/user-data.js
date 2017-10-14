@@ -39,9 +39,23 @@ function findUserData(data, cb) {
             }
         },
         {
+            '$lookup': {
+                from: 'tractive_start_data',
+                localField: '_id',
+                foreignField: 'user_id',
+                as: 'tractive_start_data'
+            }
+        },
+        {
             '$project': {
                 _id: 1, email: 1, zendesk_user: 1, 'demographics.country': 1, 'demographics.language': 1,
-                'user_data.gender': 1, friend_ids: 1, accounts: 1, user_apps: 1, membership_type: 1
+                'user_data.gender': 1, friend_ids: 1, accounts: 1, user_apps: 1, membership_type: 1,
+                tractive_start: {
+                    $cond: {
+                        if: { $gt: [ {$size: '$tractive_start_data'}, 0 ] },
+                        then: 'yes', else: 'no'
+                    }
+                }
             }
         }
     ];
@@ -57,7 +71,7 @@ function findUserData(data, cb) {
 
 function prepareUserResultData(userData, surveySubmitDate, cb) {
     var resultData = {};
-    resultData = _.assign(resultData, _.pick(userData, ['_id', 'email', 'zendesk_user', 'account_type', 'membership_type']));
+    resultData = _.assign(resultData, _.pick(userData, ['_id', 'email', 'zendesk_user', 'account_type', 'membership_type', 'tractive_start']));
     resultData.country = !!userData.demographics && !!userData.demographics.country ? userData.demographics.country : -1;
     resultData.language = !!userData.demographics && !!userData.demographics.language ? userData.demographics.language : -1;
     resultData.gender = !!userData.user_data && !!userData.user_data.gender ? userData.user_data.gender : -1;
