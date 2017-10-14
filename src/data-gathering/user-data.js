@@ -40,7 +40,7 @@ function findUserData(data, cb) {
         },
         {
             '$project': {
-                email: 1, zendesk_user: 1, account_type: 1, 'demographics.country': 1, 'demographics.language': 1,
+                _id: 1, email: 1, zendesk_user: 1, 'demographics.country': 1, 'demographics.language': 1,
                 'user_data.gender': 1, friend_ids: 1, accounts: 1, user_apps: 1, membership_type: 1
             }
         }
@@ -49,13 +49,15 @@ function findUserData(data, cb) {
         if (err) {
             return cb(err, null);
         }
-        return cb(err, prepareUserResultData(userData[0], data.submit_date));
+        prepareUserResultData(userData[0], data.submit_date, function(err, result) {
+            cb(err, result);
+        });
     });
 }
 
-function prepareUserResultData(userData, surveySubmitDate) {
+function prepareUserResultData(userData, surveySubmitDate, cb) {
     var resultData = {};
-    resultData = _.assign(resultData, _.pick(userData, ['email', 'zendesk_user', 'account_type', 'membership_type']));
+    resultData = _.assign(resultData, _.pick(userData, ['_id', 'email', 'zendesk_user', 'account_type', 'membership_type']));
     resultData.country = !!userData.demographics && !!userData.demographics.country ? userData.demographics.country : -1;
     resultData.language = !!userData.demographics && !!userData.demographics.language ? userData.demographics.language : -1;
     resultData.gender = !!userData.user_data && !!userData.user_data.gender ? userData.user_data.gender : -1;
@@ -65,11 +67,11 @@ function prepareUserResultData(userData, surveySubmitDate) {
     }).length : 0;
     resultData.number_of_fb_accounts = filterSocialAccounts(userData.accounts, 'facebook');
     resultData.nubmer_of_gplus_accounts = filterSocialAccounts(userData.accounts, 'gplus');
-    resultData.nubmer_of_twitter_accounts = filterSocialAccounts(userData.accounts, 'gplus');
+    resultData.nubmer_of_twitter_accounts = filterSocialAccounts(userData.accounts, 'twitter');
     resultData.number_of_apps = !!userData.user_apps ? _.filter(userData.user_apps, function(userApp) {
         return clients.exceptedClients.indexOf(userApp.appName) < 0 && userApp.created_at < surveySubmitDate;
     }).length : 0;
-    return expandUserDataWithClientInformation(resultData, userData);
+    return expandUserDataWithClientInformation(resultData, userData, cb);
 }
 
 function filterSocialAccounts(accounts, platform) {
@@ -78,15 +80,18 @@ function filterSocialAccounts(accounts, platform) {
     }).length;
 }
 
-function expandUserDataWithClientInformation(resultData, userData) {
+function expandUserDataWithClientInformation(resultData, userData, cb) {
     clients.getClients(function(err, clients) {
-        if (!err) {
+        if (err) {
+            return cb(err, null);
+        }
+        else {
             _.forEach(clients, function(client) {
                var clientData = client._id;
                resultData[clientData.app_name + '_' + clientData.mobile_os] =
                    _.some(userData.user_apps, {app_name: clientData.app_name, mobile_os: clientData.mobile_os}) ? 1 : 0;
             });
+            return cb(err, resultData);
         }
-        return resultData;
     });
 }
