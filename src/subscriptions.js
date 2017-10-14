@@ -35,8 +35,8 @@ function findSubscriptionData(userId, trackerId, cb) {
         {
             '$project': {
                 user_id: 1, tracker_id: 1, created_at: 1, _id: 0,
-                additional_service_ids: 1, start_data: 1, 'payment_plan.interval': 1,
-                'payment_plan.type': 1
+                additional_service_ids: 1, start_data: 1, payment_plan_interval: '$payment_plan.interval',
+                payment_plan_type: '$payment_plan.type'
             }
         }
     ];
