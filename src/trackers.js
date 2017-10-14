@@ -9,15 +9,38 @@ module.exports = {
 };
 
 function getDeviceData(data, cb) {
-    findDeviceData(data.tracker_id, cb);
+    findDeviceData(data.tracker_id, function(err, devices) {
+        if (err) {
+            return cb(err, devices);
+        }
+        else {
+            if (!!devices && devices.length === 1) {
+                cb(err, devices[0]);
+            } else {
+                cb(err, {_id: data.tracker_id, model_number: -1, sim_type: -1, fw_version: -1, hw_edition: -1})
+            }
+        }
+    });
 }
 
 function findDeviceData(trackerId, cb) {
-    return db.findOne(db.getTractiveDbConnection(), 'devices',
+    var pipeline = [
         {
-            _id: trackerId
+            '$match': {
+                hw_id: trackerId
+            }
         },
-        {model_number: 1, sim_type: 1, hw_edition: 1, fw_version: 1}, cb);
+        {
+            '$project': {
+                model_number: 1, sim_type: 1, fw_version: 1,
+                hw_edition: {$ifNull: ['$hw_edition', 'NORMAL']}
+            }
+        },
+        {
+            '$limit': 1
+        }
+    ];
+    return db.aggregate(db.getTractiveDbConnection(), 'devices', pipeline, cb);
 }
 
 function getTrackerIdsOfUsers(userIds, cb) {

@@ -10,7 +10,7 @@ function insertSubscriptionData(dataInstances, cb) {
     console.log('Fetching subscriptions data...');
     async.waterfall([
         async.apply(getSubscriptionData, dataInstances),
-        async.apply(util.mergeData, 'user_id', 'user_id', dataInstances)
+        async.apply(util.mergeData, 'tracker_id', 'tracker_id', dataInstances)
     ], cb);
 }
 
