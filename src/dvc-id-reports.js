@@ -22,11 +22,14 @@ function getDaysInUseOfTracker(data, cb) {
         async.apply(queryDaysInUseOfTracker, data.created_at, data.submit_date, data.tracker_id)
     ], function (err, results) {
         if (err) {
-            cb(err, null);
-        } else {
-            var result = {_id: data.tracker_id, days_in_use: results.length};
-            cb(null, result);
+            return cb(err, null);
         }
+        var idReports = {_id: data.tracker_id, days_in_use: 0};
+        if (!!results && results.length > 0) {
+            idReports.days_in_use = results.length;
+        }
+        console.log(idReports);
+        cb(err, idReports);
     });
 }
 

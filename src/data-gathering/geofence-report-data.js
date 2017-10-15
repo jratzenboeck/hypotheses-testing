@@ -37,9 +37,9 @@ function getGeofenceReportDataForDevice(data, cb) {
         if (err) {
             return cb(err, result);
         }
-        var geofenceData = {_id: data.tracker_id, number_of_reports: -1};
+        var geofenceData = {_id: data.tracker_id, number_of_geofence_reports: 0};
         if (!!result && result.length > 0) {
-            geofenceData.number_of_geofence_reports = result[0].number_of_reports;
+            geofenceData.number_of_geofence_reports = result[0].number_of_geofence_reports;
         }
         cb(err, geofenceData);
     });
@@ -54,7 +54,7 @@ function queryGeofenceReportData(trackerId, submitDate, cb) {
             }
         },
         {
-            '$group': {_id: '$device_id', number_of_reports: {'$sum': 1}}
+            '$group': {_id: '$device_id', number_of_geofence_reports: {'$sum': 1}}
         }
     ];
     return db.aggregate(db.getTractiveDbConnection(), COLLECTION, pipeline, cb);
