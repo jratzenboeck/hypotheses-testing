@@ -57,7 +57,7 @@ function writeHeaders(headers, file) {
 
 function writeData(data, file) {
     for (var i = 0; i < data.length; i++) {
-        data[i] = _.omit(data[i], ['zendesk_user']);
+        data[i] = _.omit(data[i], ['zendesk_user', 'submit_date', 'created_at', '_id', 'email']);
         var dataRow = _.map(data[i], _.identity);
         file.write(_.join(dataRow, ';'));
         file.write('\n');
