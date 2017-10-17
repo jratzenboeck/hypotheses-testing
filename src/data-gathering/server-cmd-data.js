@@ -37,7 +37,10 @@ function insertServerCmdMetricsData(dataInstances, cb) {
             insertAverageCmdTerminatedRate,
             insertAverageCmdDelayToConfirmed,
             insertAverageCmdDelayToPosAny,
-            insertAverageCmdDelayToPosNew
+            insertAverageCmdDelayToPosNew,
+            insertAverageCmdDelayToCommanded,
+            insertAverageCmdDelayToIdReport,
+            insertAverageCmdDuration
         ], cb);
     });
 }
@@ -76,5 +79,32 @@ function insertAverageCmdDelayToPosNew(dataInstances, cb) {
 
 function getAverageCmdDelayToPosNew(dataInstances, cb) {
     getAverageServerCmdRate(dataInstances, ['MSG_S2D_LIVE_TRACKING_MODE'], 'cmd_delay_to_pos_new', cb)
+}
+
+function insertAverageCmdDelayToIdReport(dataInstances, cb) {
+    console.log('Fetching cmd_delay_to_id_report...');
+    util.insertAverageStatisticValue(dataInstances, getAverageCmdDelayToIdReport, cb);
+}
+
+function getAverageCmdDelayToIdReport(dataInstances, cb) {
+    getAverageServerCmdRate(dataInstances, ['MSG_S2D_LIVE_TRACKING_MODE'], 'cmd_delay_to_id_report', cb)
+}
+
+function insertAverageCmdDelayToCommanded(dataInstances, cb) {
+    console.log('Fetching cmd_delay_to_commanded...');
+    util.insertAverageStatisticValue(dataInstances, getAverageCmdDelayToCommanded, cb);
+}
+
+function getAverageCmdDelayToCommanded(dataInstances, cb) {
+    getAverageServerCmdRate(dataInstances, ['MSG_S2D_LIVE_TRACKING_MODE'], 'cmd_delay_to_commanded', cb)
+}
+
+function insertAverageCmdDuration(dataInstances, cb) {
+    console.log('Fetching cmd_duration...');
+    util.insertAverageStatisticValue(dataInstances, getAverageCmdDuration, cb);
+}
+
+function getAverageCmdDuration(dataInstances, cb) {
+    getAverageServerCmdRate(dataInstances, ['MSG_S2D_LIVE_TRACKING_MODE'], 'cmd_duration', cb)
 }
 
