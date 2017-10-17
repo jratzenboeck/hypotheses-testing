@@ -80,8 +80,8 @@ function prepareUserResultData(userData, surveySubmitDate, cb) {
        return account.created_at < surveySubmitDate; // make sure that account was created before submitting the survey
     }).length : 0;
     resultData.number_of_fb_accounts = filterSocialAccounts(userData.accounts, 'facebook');
-    resultData.nubmer_of_gplus_accounts = filterSocialAccounts(userData.accounts, 'gplus');
-    resultData.nubmer_of_twitter_accounts = filterSocialAccounts(userData.accounts, 'twitter');
+    resultData.number_of_gplus_accounts = filterSocialAccounts(userData.accounts, 'gplus');
+    resultData.number_of_twitter_accounts = filterSocialAccounts(userData.accounts, 'twitter');
     resultData.number_of_apps = !!userData.user_apps ? _.filter(userData.user_apps, function(userApp) {
         return clients.exceptedClients.indexOf(userApp.appName) < 0 && userApp.created_at < surveySubmitDate;
     }).length : 0;
