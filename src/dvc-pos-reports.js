@@ -17,7 +17,7 @@ function getAveragePosReportStatisticForTracker(posReportField, allowedSensors, 
         async.apply(queryAveragePosReportStatistic, posReportField, allowedSensors, data.created_at, data.submit_date, data.tracker_id)
     ], function (err, results) {
         var result = {_id: data.tracker_id};
-        result[posReportField] = results.length > 0 ? results[0][posReportField] : -1;
+        result[posReportField] = !!result && results.length > 0 ? results[0][posReportField] : -1;
         console.log(result);
         cb(err, result);
     });
@@ -27,7 +27,7 @@ function getNumberOfSensorReports(sensorUsed, data, cb) {
     async.waterfall([
         async.apply(queryNumberOfSensorReports, sensorUsed, data.created_at, data.submit_date, data.tracker_id)
     ], function (err, results) {
-        var result = {_id: data.tracker_id, no_cell_locates: results.length > 0 ? results[0].no_cell_locates : -1};
+        var result = {_id: data.tracker_id, no_cell_locates: !!results && results.length > 0 ? results[0].no_cell_locates : -1};
         console.log(result);
         cb(err, result);
     });
