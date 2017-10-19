@@ -23,7 +23,7 @@ function getPetSurveyDataForUser(data, cb) {
         }
         async.waterfall([
             async.apply(initPetSurveyData, data.user_id),
-            async.apply(queryPetSurveyAnswersForUser, data.user_id, data.submit_date, questionHashMap)
+            async.apply(queryPetSurveyAnswersForUser, data.user_id, data.submit_date)
         ], cb);
     })
 }
@@ -35,7 +35,7 @@ function initPetSurveyData(userId, cb) {
         }
         var petSurveyData = {_id: userId};
         _.forEach(questions, function(question) {
-            petSurveyData[question.text.en] = -1;
+            petSurveyData[question._id] = -1;
         });
         return cb(err, petSurveyData);
     })
@@ -59,16 +59,13 @@ function initPetQuestionHashMap(cb) {
     });
 }
 
-function queryPetSurveyAnswersForUser(userId, submitDate, petSurveyQuestions, petSurveyData, cb) {
+function queryPetSurveyAnswersForUser(userId, submitDate, petSurveyData, cb) {
     return db.find(db.getTractiveDbConnection(), COLLECTION_ANSWERS, {user_id: userId, created_at: {$lte: submitDate}}, {}, {}, function(err, answers) {
         if (err) {
             return cb(err, answers);
         }
         _.forEach(answers, function(answer) {
-            var questionText = _.first(_.filter(petSurveyQuestions, function(q) {
-                return q._id === answer.question_id.toString();
-            })).text;
-            petSurveyData[questionText] = answer.given_answer_id.toString();
+            petSurveyData[answer.question_id.toString()] = answer.given_answer_id.toString();
         });
         cb(err, petSurveyData);
     });
