@@ -36,11 +36,11 @@ function getGeofenceDataForDevice(data, cb) {
                 number_of_circular_geofences: 0,
                 number_of_rectangular_geofences: 0,
                 number_of_active_geofences: 0,
-                home: 0,
-                tractive: 0,
-                paw: 0,
-                bone: 0,
-                work: 0
+                home: 'no',
+                tractive: 'no',
+                paw: 'no',
+                bone: 'no',
+                work: 'no'
             };
             geofenceData._id = data.tracker_id;
             geofenceData.number_of_circular_geofences = getNumberOfGeofencesByShape(result[0], 'CIRCLE');
@@ -50,7 +50,7 @@ function getGeofenceDataForDevice(data, cb) {
             _.forEach(icons, function(iconData) {
                 var icon = iconData._id.icon;
                 if (!!icon) {
-                    geofenceData[icon.toLowerCase()] = iconData.count;
+                    geofenceData[icon.toLowerCase()] = iconData.count > 0 ? 'yes' : 'no';
                 }
             });
             cb(err, geofenceData);

@@ -103,7 +103,7 @@ function expandUserDataWithClientInformation(resultData, userData, cb) {
             _.forEach(clients, function(client) {
                var clientData = client._id;
                resultData[clientData.app_name + '_' + clientData.mobile_os] =
-                   _.some(userData.user_apps, {app_name: clientData.app_name, mobile_os: clientData.mobile_os}) ? 1 : 0;
+                   _.some(userData.user_apps, {app_name: clientData.app_name, mobile_os: clientData.mobile_os}) ? 'yes' : 'no';
             });
             return cb(err, resultData);
         }
