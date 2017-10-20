@@ -15,7 +15,7 @@ function getServerCommandMetricsForTracker(commands, cmdStatistic, data, cb) {
     queryServerCommandMetricsForTracker(commands, cmdStatistic, data.created_at, data.submit_date, data.tracker_id,
         function (err, results) {
             var result = {_id: data.tracker_id};
-            result[cmdStatistic] = results.length > 0 ? results[0][cmdStatistic] : -1;
+            result[cmdStatistic] = results.length > 0 ? _.round(results[0][cmdStatistic], 3) : -1;
             console.log(result);
             cb(err, result);
         });

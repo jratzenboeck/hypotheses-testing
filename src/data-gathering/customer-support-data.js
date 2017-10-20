@@ -103,8 +103,8 @@ function getCustomerSupportDataForUser(data, cb) {
 
             getMetricsForSupportTickets(tickets, function (err, metrics) {
                 if (!err) {
-                    supportResultData.avg_waiting_time = _.mean(_.map(metrics, 'waiting_time.business'));
-                    supportResultData.avg_resolution_time = _.mean(_.map(metrics, 'resolution_time.business'));
+                    supportResultData.avg_waiting_time = _.round(_.mean(_.map(metrics, 'waiting_time.business')), 3);
+                    supportResultData.avg_resolution_time = _.round(_.mean(_.map(metrics, 'resolution_time.business')), 3);
                     supportResultData.reopen_count = _.sum(_.map(metrics, 'reopens'));
                     supportResultData.replies = _.sum(_.map(metrics, 'replies'));
                 }
